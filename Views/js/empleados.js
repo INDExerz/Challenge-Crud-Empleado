@@ -150,20 +150,29 @@ function guardar(){
     let action = $("input[name=id]").val() ? "actualizar":"crear";
     data.push({name:"action", value:action});
 
-    $.post("../controllers/UsuarioController.php", data, function(){
-        $("#modal").modal("hide");
-        tabla.ajax.reload();
-        if(action == "crear"){
+    $.post("../controllers/UsuarioController.php", data, function(response){
+        let res = JSON.parse(response);
+        if(res.status == "ok"){
+            $("#modal").modal("hide");
+            tabla.ajax.reload();
+            if(action == "crear"){
+                Swal.fire(
+                    'Guardado!',
+                    'El empleado ha sido creado.',
+                    'success'
+                );
+            } else if(action == "actualizar"){
+                Swal.fire(
+                    'Actualizado!',
+                    'El empleado ha sido actualizado.',
+                    'success'
+                );
+            }
+        } else {
             Swal.fire(
-                'Guardado!',
-                'El empleado ha sido creado.',
-                'success'
-            );
-        } else if(action == "actualizar"){
-            Swal.fire(
-                'Actualizado!',
-                'El empleado ha sido actualizado.',
-                'success'
+                'Error!',
+                res.error,
+                'error'
             );
         }
     });
